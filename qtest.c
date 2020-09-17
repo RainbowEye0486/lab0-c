@@ -140,7 +140,6 @@ static bool do_free(int argc, char *argv[])
     if (!q)
         report(3, "Warning: Calling free on null queue");
     error_check();
-
     if (qcnt > big_queue_size)
         set_cautious_mode(false);
     if (exception_setup(true))

@@ -24,15 +24,15 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
-    /* TODO: How about freeing the list elements and the strings? */
-    /* Free queue structure */
-    while (q->head != NULL) {
-        list_ele_t *tmp = q->head;
-        q->head = q->head->next;
-        free(tmp->value);
-        free(tmp);
+    if (q) {
+        while (q->head != NULL) {
+            list_ele_t *tmp = q->head;
+            q->head = q->head->next;
+            free(tmp->value);
+            free(tmp);
+        }
+        free(q);
     }
-    free(q);
 }
 
 /*
@@ -124,28 +124,22 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
     /* TODO: You need to fix up this code. */
     /* TODO: Remove the above comment when you are about to implement. */
-    if (q == NULL || q->head == NULL || sp == NULL) {
+    if (!q || !q->head || !sp) {
         return false;
     }
     /*
     Because we can't not sure the cosistency of value and sp , we need to
     prevent overflow of sp
     */
-    if (bufsize > strlen(q->head->value)) {
-        strncpy(sp, q->head->value, bufsize - 1);
-        sp[strlen(q->head->value)] = '\0';
-    } else {
-        strncpy(sp, q->head->value, bufsize - 1);
-        sp[bufsize] = '\0';
-    }
-
+    memset(sp, '\0', bufsize);
+    strncpy(sp, q->head->value, bufsize - 1);
     list_ele_t *tmp = q->head;
     q->head = q->head->next;
     free(tmp->value);
     free(tmp);
 
     /* If q is empty */
-    if (q->head == NULL) {
+    if (q->head) {
         q->tail = NULL;
     }
 
@@ -159,7 +153,7 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
-    if (q == NULL || q->head == NULL) {
+    if (!q || !q->head) {
         return 0;
     }
     return q->size;
@@ -197,5 +191,58 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
+    if (!q || q->size <= 1) {
+        return;
+    }
+    q->head = merge_sort_list(q->head);
+
+    while (q->tail->next) {
+        q->tail = q->tail->next;
+    }
     return;
 }
+
+
+list_ele_t *merge_sort_list(list_ele_t *head)
+{
+    if (!head || !head->next) {
+        return head;
+    }
+    list_ele_t *fast = head->next;
+    list_ele_t *slow = head;
+    /* spilt list */
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    fast = slow->next;
+    slow->next = NULL;
+    list_ele_t *l1 = merge_sort_list(head);
+    list_ele_t *l2 = merge_sort_list(fast);
+    return merge(l1, l2);
+}
+
+/*Merge sort usage, merge two short lists into a longer one*/
+
+list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
+{
+    list_ele_t q;
+    list_ele_t *temp = &q;
+    while (l1 && l2) {
+        if (strcmp(l1->value, l2->value) < 0) {
+            temp->next = l1;
+            temp = temp->next;
+            l1 = l1->next;
+        } else {
+            temp->next = l2;
+            temp = temp->next;
+            l2 = l2->next;
+        }
+    }
+    if (l1)
+        temp->next = l1;
+    if (l2)
+        temp->next = l2;
+    return q.next;
+}
+
