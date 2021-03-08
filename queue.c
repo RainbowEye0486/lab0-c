@@ -122,8 +122,6 @@ bool q_insert_tail(queue_t *q, char *s)
  */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    /* TODO: You need to fix up this code. */
-    /* TODO: Remove the above comment when you are about to implement. */
     if (!q || !q->head || !sp) {
         return false;
     }
@@ -223,7 +221,6 @@ list_ele_t *merge_sort_list(list_ele_t *head)
 }
 
 /*Merge sort usage, merge two short lists into a longer one*/
-
 list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
 {
     list_ele_t q;

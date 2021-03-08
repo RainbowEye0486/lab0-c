@@ -784,6 +784,7 @@ int main(int argc, char *argv[])
     add_quit_helper(queue_quit);
 
     bool ok = true;
+    // printf("Console: %d",ok);
     ok = ok && run_console(infile_name);
     ok = ok && finish_cmd();
 
